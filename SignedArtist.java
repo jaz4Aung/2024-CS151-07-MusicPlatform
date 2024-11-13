@@ -34,6 +34,11 @@ public class SignedArtist extends Artist {
     // Upload a song with a 1-week delay and add it to the song base
     @Override
     public void uploadSong(Song song) {
+
+        if (song == null) {
+            System.out.println("Cannot upload a null song.");
+            return;
+        }
         // Validate if the entered release date is in the future
         if (song.getReleaseDate().isAfter(LocalDate.now())) {
             System.out.println("Future release date detected. Uploading on: " + song.getReleaseDate());
@@ -53,6 +58,10 @@ public class SignedArtist extends Artist {
     // Delete a song from the uploaded list and SongBase if eligible
     @Override
     public void deleteSong(Song song) {
+        if (song == null) {
+        System.out.println("Cannot delete a null song.");
+        return;
+        }
         LocalDate uploadDate = song.getReleaseDate();
         LocalDate eligibleDate = uploadDate.plus(1, ChronoUnit.YEARS);
     
