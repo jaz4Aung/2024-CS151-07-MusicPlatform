@@ -14,18 +14,33 @@ public class SongBase {
 
     // Add a song to the database
     public void addSong(Song song) {
+        if (song == null) {
+            System.out.println("Cannot add a null song.");
+            return;
+    }
         allSongs.add(song);
     }
 
     // Add a playlist to the database
     public void addPlaylist(Playlist playlist) {
+        if (playlist == null) {
+        System.out.println("Cannot add a null playlist.");
+        return;
+    }
         allPlaylists.add(playlist);
 
     }
 
     // Removes the song if it exists
     public boolean removeSong(Song song) {
-        return allSongs.remove(song); 
+        
+        if (song == null || !allSongs.contains(song)) {
+        System.out.println("Song not found in the database.");
+        return false;
+        }
+        allSongs.remove(song);
+        System.out.println("Song '" + song.getName() + "' removed from the database.");
+        return true;
     }
 
     // Search and display song details by name
@@ -42,6 +57,10 @@ public class SongBase {
 
     // Search for a song by name
     public Song searchSong(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            System.out.println("Song name cannot be empty.");
+            return null;
+        }
         for (Song song : allSongs) {
             if (song.getName().equalsIgnoreCase(name.trim())) {
                 return song;
