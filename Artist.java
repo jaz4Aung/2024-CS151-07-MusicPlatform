@@ -59,14 +59,27 @@ public abstract class Artist {
     }
 
     // Add a follower
+    // public void addFollower(User user) {
+    //     if (!followers.contains(user)) {
+    //         followers.add(user);
+    //         System.out.println(user.getUsername() + " is now following " + name);
+    //     } else {
+    //         System.out.println(user.getUsername() + " is already following " + name);
+    //     }
+    // }
     public void addFollower(User user) {
+        if (user == null) {
+            System.out.println("Cannot add a null follower.");
+            return;
+        }
         if (!followers.contains(user)) {
             followers.add(user);
             System.out.println(user.getUsername() + " is now following " + name);
         } else {
-            System.out.println(user.getUsername() + " is already following " + name);
+        System.out.println(user.getUsername() + " is already following " + name);
         }
     }
+
 
     // Remove a follower
     public void removeFollower(User user) {
