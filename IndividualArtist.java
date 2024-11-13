@@ -2,6 +2,7 @@ package musicplatform;
 
 public class IndividualArtist extends Artist {
     private String bio; // Artist bio or description
+    private static final double EARNINGS_PER_STREAM = 0.01;
 
     // Constructor
     public IndividualArtist(User user, SongBase songBase) {
@@ -17,14 +18,27 @@ public class IndividualArtist extends Artist {
     // Upload a song instantly and add it to the platform database
     @Override
     public void uploadSong(Song song) {
+        if (song == null) {
+        System.out.println("Cannot upload a null song.");
+        return;
+        }
+        if (uploadedSongs.contains(song)) {
+            System.out.println("Song '" + song.getName() + "' is already uploaded.");
+            return;
+        }
         uploadedSongs.add(song); // Add to artist's personal list
         songBase.addSong(song); // Add song to global SongBase
         System.out.println("Instantly uploaded song: " + song.getName());
     }
 
+
     // Delete a song from the artist's uploads and the platform database
     @Override
     public void deleteSong(Song song) {
+        if (song == null) {
+                System.out.println("Cannot delete a null song.");
+                return;
+            }
         if (uploadedSongs.remove(song)) { // Remove from artist's personal list
             songBase.removeSong(song); // Remove from the platform's SongBase
             System.out.println("Deleted song: " + song.getName());
@@ -32,6 +46,7 @@ public class IndividualArtist extends Artist {
             System.out.println("Song not found in your uploads.");
         }
     }
+
 
     // View the list of uploaded songs
     @Override
@@ -62,10 +77,11 @@ public class IndividualArtist extends Artist {
     // Calculate total earnings from streams (Individual artists get 100% revenue)
     @Override
     public double calculateEarnings() {
-        double totalEarnings = getTotalStreams() * 0.01; // Assume $0.01 per stream
+        double totalEarnings = getTotalStreams() * EARNINGS_PER_STREAM;
         System.out.println(name + " has earned $" + totalEarnings + " from streams.");
         return totalEarnings;
     }
+
 
     // Calculate total streams from all uploaded songs
     @Override
