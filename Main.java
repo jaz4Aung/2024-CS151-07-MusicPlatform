@@ -60,14 +60,26 @@ public class Main {
     private static void registerUser() {
         System.out.print("Enter user ID: ");
         String userId = scanner.nextLine();
+        if (users.containsKey(userId)) {
+            System.out.println("User ID already exists. Please choose another one.");
+            return;
+        }
+
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
         System.out.print("Enter username: ");
         String username = scanner.nextLine();
         System.out.print("Enter email: ");
         String email = scanner.nextLine();
-        System.out.print("Enter birth date (YYYY-MM-DD): ");
-        LocalDate birthDate = LocalDate.parse(scanner.nextLine());
+        System.out.print("Enter birth date (YYYY-MM-DD): ");\
+        try {
+            LocalDate birthDate = LocalDate.parse(scanner.nextLine());
+            // Proceed with registration
+        } catch (Exception e) {
+            System.out.println("Invalid date format. Please use YYYY-MM-DD.");
+            return;
+        }
+
 
         User newUser = new User(userId, password, username, email, birthDate, songBase);
         users.put(userId, newUser);
@@ -92,48 +104,47 @@ public class Main {
 
     // Main menu with exception handling
     private static void mainMenu() {
-        String choice = "";  
-
+    String choice;
         do {
-            try {
-                System.out.println("\n=== Main Menu ===");
-                System.out.println("1. View/Update Profile");
-                System.out.println("2. Play Song");
-                System.out.println("3. Manage Playlists");
-                System.out.println("4. Apply for Artist Role");
-                System.out.println("5. Manage Artist Profile");
-                System.out.println("6. Search Songs/Playlists");
-                System.out.println("7. Stop Song");
-                System.out.println("8. Like a Song");
-                System.out.println("9. See Current Song Info");
-                System.out.println("10. Log out");
-                System.out.println("EXIT - Close the program");
-                System.out.print("Enter your choice: ");
-                choice = scanner.nextLine().trim().toUpperCase();
-
-                switch (choice) {
-                    case "1" -> manageProfile();
-                    case "2" -> playSongOptions();
-                    case "3" -> managePlaylists();
-                    case "4" -> applyForArtist();
-                    case "5" -> manageArtistProfile();
-                    case "6" -> searchSongsAndPlaylists();
-                    case "7" -> loggedInUser.stopSong();
-                    case "8" -> likeSong();
-                    case "9" -> displayCurrentSongInfo();
-                    case "10" -> {
-                        loggedInUser = null;
-                        System.out.println("Logged out successfully.");
-                        return;
-                    }
-                    case "EXIT" -> System.out.println("Exiting the program...");
-                    default -> throw new IllegalArgumentException("Invalid choice. Try again.");
-                }
-            } catch (IllegalArgumentException e) {
-                System.out.println("Error: " + e.getMessage());
-            }
+            displayMainMenuOptions();  // Modularize menu display
+            choice = scanner.nextLine().trim().toUpperCase();
+            handleMainMenuChoice(choice);  // Modularize choice handling
         } while (!choice.equals("EXIT"));
     }
+
+    private static void displayMainMenuOptions() {
+        System.out.println("\n=== Main Menu ===");
+        System.out.println("1. View/Update Profile");
+        System.out.println("2. Play Song");
+        System.out.println("3. Manage Playlists");
+        System.out.println("4. Apply for Artist Role");
+        System.out.println("5. Manage Artist Profile");
+        System.out.println("6. Search Songs/Playlists");
+        System.out.println("7. Stop Song");
+        System.out.println("8. Like a Song");
+        System.out.println("9. See Current Song Info");
+        System.out.println("10. Log out");
+        System.out.println("EXIT - Close the program");
+        System.out.print("Enter your choice: ");
+    }
+    
+    private static void handleMainMenuChoice(String choice) {
+        switch (choice) {
+            case "1" -> manageProfile();
+            case "2" -> playSongOptions();
+            case "3" -> managePlaylists();
+            case "4" -> applyForArtist();
+            case "5" -> manageArtistProfile();
+            case "6" -> searchSongsAndPlaylists();
+            case "7" -> loggedInUser.stopSong();
+            case "8" -> likeSong();
+            case "9" -> displayCurrentSongInfo();
+            case "10" -> logOut();
+            case "EXIT" -> System.out.println("Exiting the program...");
+            default -> System.out.println("Invalid choice. Try again.");
+        }
+    }
+
 
     private static void manageArtistProfile() {
         if (loggedInUser.getArtistProfile() == null) {
@@ -149,6 +160,8 @@ public class Main {
         System.out.println("0. Back to Main Menu");
         System.out.print("Enter your choice: ");
         String choice = scanner.nextLine().trim();
+
+
     
         switch (choice) {
             case "1" -> uploadSong();
@@ -280,6 +293,10 @@ public class Main {
     private static void createPlaylist() {
         System.out.print("Enter playlist name: ");
         String name = scanner.nextLine();
+        if (loggedInUser.getPlaylists().containsKey(name)) {
+            System.out.println("A playlist with this name already exists.");
+            return;
+        }
         loggedInUser.createPlaylist(name);
         System.out.println("Playlist '" + name + "' created.");
     }
@@ -398,13 +415,20 @@ public class Main {
         String type = scanner.nextLine().trim().toLowerCase();
     
         switch (type) {
-            case "individual" -> loggedInUser.setArtistProfile(new IndividualArtist(loggedInUser, songBase));
-            case "signed" -> loggedInUser.setArtistProfile(new SignedArtist(loggedInUser, songBase));
+            case "individual" -> {
+                loggedInUser.setArtistProfile(new IndividualArtist(loggedInUser, songBase));
+                System.out.println("You are now an Individual Artist.");
+            }
+            case "signed" -> {
+                loggedInUser.setArtistProfile(new SignedArtist(loggedInUser, songBase));
+                System.out.println("You are now a Signed Artist.");
+            }
             default -> {
-                System.out.println("Invalid artist type. Please try again.");
+                System.out.println("Invalid artist type. Please enter 'individual' or 'signed'.");
                 return;
             }
         }
+
     
         loggedInUser.setArtist(true);
         System.out.println(loggedInUser.getUsername() + " is now a " + type + " artist.");
